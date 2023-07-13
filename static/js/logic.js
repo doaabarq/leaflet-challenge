@@ -53,17 +53,23 @@ function chooseColor(depth) {
 
 //define a function to determine the radius of each earthquake marker
 function chooseRadius(magnitude) {
-    return magnitude*5;
-};
+    // Adjust the factor to scale the radius according to your preference
+    const scaleFactor = 5;
+    return magnitude * scaleFactor;
+}
 
 
-d3.json(url).then(function (data) { //pull the earthquake JSON data with d3
+d3.json(url).then(function(data) {
     L.geoJson(data, {
-        pointToLayer: function (feature, latlon) {  //declare a point to layer function that takes a feature and latlon
-            return L.circleMarker(latlon).bindPopup(feature.id); //function creates a circleMarker at latlon and binds a popup with the earthquake id
+        pointToLayer: function(feature, latlng) {
+            return L.circleMarker(latlng).bindPopup(`
+                <b>Magnitude:</b> ${feature.properties.mag}<br>
+                <b>Location:</b> ${feature.properties.place}<br>
+                <b>Depth:</b> ${feature.geometry.coordinates[2]} km
+            `);
         },
-        style: styleInfo //style the CircleMarker with the styleInfo function as defined above
-    }).addTo(earthquake_data); // add the earthquake data to the earthquake_data layergroup / overlay
+        style: styleInfo
+    }).addTo(earthquake_data);
     earthquake_data.addTo(myMap);
 
     //The function pulls the tectonic plate data and draws a black line over the plates
